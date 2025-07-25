@@ -27,41 +27,52 @@ def catch_all(path):
     app.logger.warning("request {} proxy_path {} data {}".format(
         request, proxy_path, request_data))
 
+    headers = {}
+
+    for (key, value) in request.headers:
+        if key.lower() == "content-type":
+            if value.lower() == "application/scim+json":
+                headers[key] = "application/json"
+            else:
+                headers[key] = value
+        else:
+            headers[key] = value
+
     match request.method:
         case 'HEAD':
             response = requests.head(
                 "{}/{}".format(sys.argv[1], proxy_path),
-                headers=request.headers,
+                headers=headers,
                 data=request_data,
             )
         case 'GET':
             response = requests.get(
                 "{}/{}".format(sys.argv[1], proxy_path),
-                headers=request.headers,
+                headers=headers,
                 data=request_data,
             )
         case 'POST':
             response = requests.post(
                 "{}/{}".format(sys.argv[1], proxy_path),
-                headers=request.headers,
+                headers=headers,
                 data=request_data,
             )
         case 'PUT':
             response = requests.put(
                 "{}/{}".format(sys.argv[1], proxy_path),
-                headers=request.headers,
+                headers=headers,
                 data=request_data,
             )
         case 'PATCH':
             response = requests.patch(
                 "{}/{}".format(sys.argv[1], proxy_path),
-                headers=request.headers,
+                headers=headers,
                 data=request_data,
             )
         case 'DELETE':
             response = requests.delete(
                 "{}/{}".format(sys.argv[1], proxy_path),
-                headers=request.headers,
+                headers=headers,
                 data=request_data,
             )
         case _:
