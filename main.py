@@ -24,14 +24,16 @@ def catch_all(path):
 
     request_data = request.get_data()
 
-    app.logger.warning("request {} proxy_path {} data {}".format(
-        request, proxy_path, request_data))
+    app.logger.warning("request {} proxy_path {} data {} headers {}".format(
+        request, proxy_path, request_data, request.headers))
 
     headers = {}
+    scim_hack = False
 
     for (key, value) in request.headers:
         if key.lower() == "content-type":
             if value.lower() == "application/scim+json":
+                scim_hack = True
                 headers[key] = "application/json"
             else:
                 headers[key] = value
@@ -87,6 +89,11 @@ def catch_all(path):
             resp.headers['Access-Control-Allow-Origin'] = '*'
             resp.status_code = 404
             return resp
+
+    if scim_hack:
+        for key in response.headers:
+            if key.lower() == "content-type":
+                response.headers[key] = "application/scim+json"
 
     app.logger.warning("response {} status {} text {} headers {}".format(
         response, response.status_code, response.text, response.headers))
