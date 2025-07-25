@@ -32,9 +32,9 @@ def catch_all(path):
 
     for (key, value) in request.headers:
         if key.lower() == "content-type":
-            if value.lower() == "application/scim+json":
+            if "application/scim+json" in value.lower():
                 scim_hack = True
-                headers[key] = "application/json"
+                headers[key].replace("application/scim+json", "application/json")
             else:
                 headers[key] = value
         else:
@@ -93,7 +93,7 @@ def catch_all(path):
     if scim_hack:
         for key in response.headers:
             if key.lower() == "content-type":
-                response.headers[key] = "application/scim+json"
+                headers[key].replace("application/json", "application/scim+json")
 
     app.logger.warning("response {} status {} text {} headers {}".format(
         response, response.status_code, response.text, response.headers))
