@@ -4,6 +4,7 @@ import time
 import json
 import sys
 import requests
+import urllib.parse
 
 
 from flask import Flask, request, jsonify, request, Response
@@ -16,7 +17,7 @@ def catch_all(path):
     if request.args:
         args = []
         for k in request.args:
-            args.append("{}={}".format(k, request.args[k]))
+            args.append("{}={}".format(k, urllib.parse.quote(request.args[k])))
         args = "&".join(args)
         proxy_path = "{}?{}".format(path, args)
     else:
